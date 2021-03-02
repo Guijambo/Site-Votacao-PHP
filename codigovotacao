@@ -1,0 +1,273 @@
+echo "# Site-Votacao-PHP" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/Guijambo/Site-Votacao-PHP.git
+git push -u origin main
+
+#ConeccaoBD
+
+<?php
+
+$pdo = new PDO('mysql:host=localhost;dbname=votacao', 'root', 'GDB');
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+  ?>
+
+#CSS
+
+.bv{
+	background-color: white;
+	border-radius: 500px;
+	padding-bottom: 555px;
+	padding-top: 555px;
+	padding-left: 555px;
+	padding-right: 555px;
+}
+a:link, a:visited, a:hover, a:active{
+	text-decoration: none;
+}
+
+.img:hover{
+	cursor: pointer;
+}
+
+.sucesso{
+	background-color: white;
+	border-radius: 200px;
+	padding-bottom: 100px;
+	padding-top: 100px;
+	padding-left: 171px;
+	padding-right: 100px;
+}
+
+.grafico{
+	background-color: white;
+	border-radius: 150px;
+}
+.grafico:hover{
+	cursor: pointer;
+}
+
+#JavaScript
+
+function formatacpf(evt){
+	vr =(navigator.appName == 'Netscape')?evt.target.value:evt.srcElement.value;
+	if(vr.length == 3){
+		vr = vr+".";
+	}
+	if(vr.length == 7){
+		vr = vr+".";
+	}
+	if(vr.length == 11){
+		vr = vr+"-";
+	}
+	return vr
+}
+
+
+# Index
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="mask.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<title>Login para Votação</title>
+	<link rel="shortcut icon" href="imgs/otaku.jpg">
+</head>
+<body bgcolor="#03fcdb">
+	<font size="10" class="bv">Bem Vindo</font>
+	<form action="login.php" method="post">
+		<center>
+			<p>CPF:<input type="text" name="cpf" maxlength="14" pattern="[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}" required="required" placeholder="000.000.000-00" onkeypress="this.value = formatacpf(event)"></p>
+			Enviar<input type="submit" name="enivar">
+		</center>
+	</form>
+	<font size="5">Insira seu cpf para ir para a pagina de votação</font>
+
+</body>
+</html>
+
+# Login
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="mask.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<title>Login para Votação</title>
+	<link rel="shortcut icon" href="imgs/otaku.jpg">
+</head>
+<body bgcolor="#03fcdb">
+	<font size="10" class="bv">Bem Vindo</font>
+	<form action="login.php" method="post">
+		<center>
+			<p>CPF:<input type="text" name="cpf" maxlength="14" pattern="[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}" required="required" placeholder="000.000.000-00" onkeypress="this.value = formatacpf(event)"></p>
+			Enviar<input type="submit" name="enivar">
+		</center>
+	</form>
+	<font size="5">Insira seu cpf para ir para a pagina de votação</font>
+
+</body>
+</html>
+
+# Votacao
+
+<?php
+echo "<!DOCTYPE html>
+<html>
+<head>
+	<link rel='stylesheet' type='text/css' href='style.css'>
+	<title>Votação</title>
+	<link rel='shortcut icon' href='imgs/otaku.jpg'>
+</head>
+<body bgcolor='#03fcdb'>
+	<center>
+		<font size='15'>Vote no melhor personagem de Genshin Impact</font>
+		<table border=1>
+		<tr>
+			<td><a href='gravar.php?cpf={$_GET['cpf']}&vota=zhongli'><img src='imgs/zhongli.jpg' width='200' height='200' class='img'></a></td>
+			<td><a href='gravar.php?cpf={$_GET['cpf']}&vota=mona'><img src='imgs/mona.jpg' width='200' height='200' class='img'></a></td>
+			<td><a href='gravar.php?cpf={$_GET['cpf']}&vota=klee'><img src='imgs/klee.jpg' width='200' height='200' class='img'></a></td>
+			<td><a href='gravar.php?cpf={$_GET['cpf']}&vota=nulo'><img src='imgs/nulo.png' width='200' height='200' class='img'></a></td>
+		</tr>
+		<tr>
+			<td>Zhongli</td>
+			<td>Mona</td>
+			<td>klee</td>
+			<td>Nulo</td>
+		</table>
+	</center>
+</body>
+</html>";
+
+?>
+
+# JaVotou
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Votou</title>
+	<link rel="shortcut icon" href="imgs/otaku.jpg">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body bgcolor="#03fcdb">
+	<font size="10" class="sucesso">Você já votou uma vez e não pode votar denovo</font>
+	<form action="grafico.php" method="post">
+		<font size="6">Ver resultado:<input type="submit" name="" value="Ver" class="grafico"></font>
+	</form>
+
+</body>
+</html>
+
+#GravandoVotacao
+
+<?php
+require_once "conectar.php";
+$cpf = $_GET['cpf'];
+$vota = $_GET['vota'];
+
+try{
+	$smt = $pdo->prepare('INSERT INTO vote VALUES (:idcpf, :cpf, :voto)');
+	$smt->execute(array(
+		':idcpf' =>Null,
+		':cpf' => $cpf,
+		':voto' => $vota
+	));
+	echo "<script>alert('Voto registrado com sucesso, Fique com o resultado');window.location.assign('grafico.php');</script>";
+} catch(PDOException $e){
+	echo "Error: " . $e->getMessage();
+}
+
+?>
+
+#VotacaoSucesso
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Votou</title>
+	<link rel="shortcut icon" href="imgs/otaku.jpg">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body bgcolor="#03fcdb">
+	<font size="10" class="sucesso.php">Seu voto foi registrado, Muito obrigado por participar :)</font>
+	<form action="grafico.php" method="post">
+		<font size="6">Ver resultado:<input type="submit" name="" value="Ver" class="grafico"></font>
+	</form>
+
+</body>
+</html>
+
+#GraficoVotacao
+
+<?php
+require_once 'conectar.php';
+
+$zhongli = 0;
+$n = 1;
+$sql = "SELECT voto FROM vote WHERE voto like 'zhongli'";
+$sql = $pdo->query($sql);
+$zhongli = $sql->rowCount();
+
+$mona = 0;
+$n = 1;
+$sql = "SELECT voto FROM vote WHERE voto like 'mona'";
+$sql = $pdo->query($sql);
+$mona = $sql->rowCount();
+
+$klee = 0;
+$n = 1;
+$sql = "SELECT voto FROM vote WHERE voto like 'klee'";
+$sql = $pdo->query($sql);
+$klee = $sql->rowCount();
+
+$nulo = 0;
+$n = 1;
+$sql = "SELECT voto FROM vote WHERE voto like 'nulo'";
+$sql = $pdo->query($sql);
+$nulo = $sql->rowCount();
+
+//echo "Votos Zhongli: $zhongli, Votos Mona: $mona, Votos Klee: $klee, Votos nulos: $nulo";
+
+echo "<html>
+  <head>
+    <link rel='stylesheet' type='text/css' href='style.css'>
+    <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+    <script type='text/javascript'>
+      google.charts.load('current', {packages:['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Votacao', 'Personagens'],
+          ['Zhongli',     $zhongli],
+          ['Mona',      $mona],
+          ['Klee',  $klee],
+          ['Nulo', $nulo]
+        ]);
+
+        var options = {
+          title: 'Votação melhor personagem Genshin Impact',
+          is3D: true,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+        chart.draw(data, options);
+      }
+    </script>
+    <link rel='shortcut icon' href='imgs/otaku.jpg'>
+    <title>Resultado</title>
+  </head>
+  <body bgcolor='#03fcdb'>
+    <div id='piechart_3d' style='width: 900px; height: 500px;'></div>
+    <br>Votar Novamente<a href='index.php'><img src='imgs/volta.jpg' width='50' height='50' class='img' class='img'></a>
+  </body>
+</html>";
+?>
